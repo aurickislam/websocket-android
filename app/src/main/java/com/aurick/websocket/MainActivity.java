@@ -1,5 +1,6 @@
 package com.aurick.websocket;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
 
-    private WebsocketClient c;
+    private WebsocketClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         }.start();
 
         final EditText editText = findViewById(R.id.message_input);
+        editText.setText("Broadcasting from " + Build.MANUFACTURER + " " + Build.MODEL);
+//        editText.setText("Broadcasting from " + Build.BRAND + " " + Build.MODEL);
 
         final Button button = findViewById(R.id.broadcast);
         button.setOnClickListener(new View.OnClickListener() {
@@ -44,13 +47,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         textView = findViewById(R.id.message_box);
+
+//        System.out.println("@gg " + System.getProperty("os.arch"));
     }
 
     void initWebsocket() {
         try {
-            c = new WebsocketClient(new URI("ws://192.168.88.2:8999/broadcast"));
-            c.connect();
-            c.addMessageHandler(new WebsocketClient.MessageHandler() {
+            client = new WebsocketClient(new URI("ws://192.168.88.2:8999/broadcast"));
+            client.connect();
+            client.addMessageHandler(new WebsocketClient.MessageHandler() {
                 @Override
                 public void handleMessage(String message) {
                     System.out.println("received: " + message);
@@ -69,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void sentMessage(String message) {
-        c.send(message);
+        client.send(message);
         /*try {
             c.reconnectBlocking();
             c.send("Broadcasting from Android");
